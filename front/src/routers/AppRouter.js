@@ -1,18 +1,31 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
-import { startChecking } from '../actions/auth';
 import LoginScreen from '../components/auth/LoginScreen';
-import CalendarScreen from '../components/calendar/CalendarScreen';
 import LoadingScreen from '../components/ui/LoadingScreen';
 import { PrivateRoutes } from './PrivateRoute';
 import { PublicRoutes } from './PublicRoute';
+import ToDo from '../components/ToDo/ToDo';
+import { GlobalContext } from '../ToDoApp';
 
 const AppRouter = () => {
-  // useEffect(() => {
-  //   dispatch(startChecking());
-  // }, [dispatch]);
+  const { actions, states, dispatch } = useContext(GlobalContext);
 
-  if (true) {
+  const start = () => {
+    dispatch.ui(actions.ui.startLoading());
+    actions.auth
+      .startChecking()
+      .then(data => {
+        data && dispatch.auth(data);
+        dispatch.ui(actions.ui.endLoading());
+      })
+      .catch(err => console.log(err));
+  };
+
+  useEffect(() => {
+    start();
+  }, []);
+
+  if (states.ui.loading) {
     return <LoadingScreen />;
   }
 
@@ -24,13 +37,13 @@ const AppRouter = () => {
             exact
             path="/login"
             component={LoginScreen}
-            isAuthenticated={!!uid}
+            isAuthenticated={!!states.auth.uid}
           />
           <PrivateRoutes
             exact
             path="/"
-            component={CalendarScreen}
-            isAuthenticated={!!uid}
+            component={ToDo}
+            isAuthenticated={!!states.auth.uid}
           />
           <Redirect to="/" />
         </Switch>
