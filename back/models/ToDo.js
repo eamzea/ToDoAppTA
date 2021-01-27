@@ -1,24 +1,21 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const ToDoSchema = Schema({
   title: {
     type: String,
     required: true,
   },
-  notes: {
-    type: String,
-	},
-	done: {
-		type: Boolean,
-	}
+  done: {
+    type: Boolean,
+  },
   user: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
 });
 
-ToDoSchema.method("toJSON", function () {
+ToDoSchema.method('toJSON', function () {
   const { __v, _id, ...object } = this.toObject();
 
   object.id = _id;
@@ -26,4 +23,4 @@ ToDoSchema.method("toJSON", function () {
   return object;
 });
 
-module.exports = model("ToDo", ToDoSchema);
+module.exports = model('ToDo', ToDoSchema);
